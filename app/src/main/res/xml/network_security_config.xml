@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">d3rlna7iyyu8wu.cloudfront.net</domain>
+        <domain includeSubdomains="true">45.127.244.7</domain>
+        <domain includeSubdomains="true">ftp.itec.aau.at</domain>
+        <domain includeSubdomains="true">media.developer.dolby.com</domain>
+    </domain-config>
+</network-security-config>
