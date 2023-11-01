@@ -98,7 +98,7 @@ class PlayerActivity : AppCompatActivity() {
     private var resumeVideoOnPreviewStop:Boolean = false
     private lateinit var dataSourceFactory:DefaultDataSource.Factory
 
-    @SuppressLint("UnspecifiedRegisterReceiverFlag")
+
     @RequiresApi(Build.VERSION_CODES.Q)
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     override fun  onCreate(savedInstanceState: Bundle?) {
