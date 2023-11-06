@@ -79,30 +79,31 @@ class PlayerActivity : AppCompatActivity() {
     private val viewBinding by lazy(LazyThreadSafetyMode.NONE) {
         ActivityPlayerBinding.inflate(layoutInflater)
     }
-    lateinit var subtitleSelectionPopup :PopupMenu
+    lateinit var subtitleSelectionPopup : PopupMenu
     lateinit var resolutionSelectorPopup : PopupMenu
     lateinit var audioSelectorPopup : PopupMenu
-    private var lastSelectedAudioTrack:MenuItem? = null
-    private var lastSelectedVideoTrack:MenuItem? = null
-    private var lastSelectedSubtitleTrack:MenuItem? = null
-    private var languageCode:String? = null
-    private val playbackStateListener: Player.Listener = playbackStateListener()
-    private var player: ExoPlayer? = null
-    private var mediaItem:MediaItem? = null
+    private var lastSelectedAudioTrack : MenuItem? = null
+    private var lastSelectedVideoTrack : MenuItem? = null
+    private var lastSelectedSubtitleTrack : MenuItem? = null
+    private var languageCode : String? = null
+    private val playbackStateListener : Player.Listener = playbackStateListener()
+    private var player : ExoPlayer? = null
+    private var mediaItem :MediaItem? = null
     private var playWhenReady = true
+    private var downloadPath : File? = null
     private var mediaItemIndex = 0
     private var playbackPosition = 0L
-    private var previewTimeBar: PreviewTimeBar? = null
-    private var mediaCodecSelector: MediaCodecSelector? = null
+    private var previewTimeBar : PreviewTimeBar? = null
+    private var mediaCodecSelector : MediaCodecSelector? = null
     private lateinit var mediaSource : MediaSource
     private var sublist : ArrayList<String>? = arrayListOf()
     private var reslist : ArrayList<Resolution>? = arrayListOf()
     private var audiolist : ArrayList<Audio>? = arrayListOf()
-    private var resumeVideoOnPreviewStop:Boolean = false
-    private lateinit var dataSourceFactory:DefaultDataSource.Factory
-    private var thumbnailCache:File? = null
-    private lateinit var downloadManager:DownloadManager
-    private var reference:Long = 0L
+    private var resumeVideoOnPreviewStop : Boolean = false
+    private lateinit var dataSourceFactory : DefaultDataSource.Factory
+    private var thumbnailCache : File? = null
+    private lateinit var downloadManager : DownloadManager
+    private var reference : Long = 0L
 
     @RequiresApi(Build.VERSION_CODES.Q)
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
@@ -113,22 +114,24 @@ class PlayerActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
 
-        val downloadPath= File(externalCacheDir,"thumbnailcache.zip")
-        if(downloadPath.exists()){
-            downloadPath.delete()
+        downloadPath = File(externalCacheDir,"thumbnailcache.zip")
+        if(downloadPath?.exists() == true){
+            downloadPath?.delete()
         }
         val request = DownloadManager
             .Request(Uri
             .parse("https://filedrop.teamta.net/link/049806cb-e30f-488f-8e30-60c36daf8795"))
-            .setDestinationUri(downloadPath.toUri())
+            .setDestinationUri(downloadPath?.toUri())
         reference = downloadManager.enqueue(request)
-        val downloadedFileUri = downloadManager.getUriForDownloadedFile(reference)
+
         val onComplete: BroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(ctxt: Context, intent: Intent) {
                 // your code
                 File(filesDir, "mythumbs").also {
                     it.mkdir()
-                    UnzipUtils.unzip(downloadPath,it.absolutePath)
+                    downloadPath?.let { downloadPath ->
+                        UnzipUtils.unzip(downloadPath,it.absolutePath)
+                    }
                     thumbnailCache = it
                 }
             }
@@ -213,31 +216,6 @@ class PlayerActivity : AppCompatActivity() {
        ExoUtils.generateMediaSource(getString(R.string.media_url_m3u8_multi_language),this)?.let {
             mediaSource = it
         }
-
-        viewBinding.videoView.setOnTouchListener(object: OnSwipeTouchListener(this@PlayerActivity){
-            override fun onSwipeLeft() {
-                releasePlayer()
-
-                mediaItem = MediaItem.Builder()
-                    .setUri(Uri.parse(getString(R.string.media_url_Live)))
-                    .setMimeType(MimeTypes.APPLICATION_M3U8)
-                    .build()
-
-
-                initializePlayer()
-                super.onSwipeLeft()
-            }
-
-            override fun onSwipeRight() {
-                releasePlayer()
-               mediaItem =  MediaItem.Builder()
-                    .setUri(Uri.parse(getString(R.string.media_url_Live2)))
-                    .setMimeType(MimeTypes.APPLICATION_M3U8)
-                    .build()
-                initializePlayer()
-                super.onSwipeRight()
-            }
-        })
     }
 
     public override fun onStart() {
