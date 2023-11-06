@@ -15,9 +15,14 @@
  */
 package com.example.exoplayer
 
+import UnzipUtils
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.app.DownloadManager
+import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -33,11 +38,10 @@ import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.PopupMenu
-import android.widget.ProgressBar
 import androidx.annotation.RequiresApi
-import com.bumptech.glide.request.target.Target
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.net.toUri
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -51,7 +55,6 @@ import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.mediacodec.MediaCodecSelector
 import androidx.media3.exoplayer.source.MediaSource
-import androidx.media3.ui.DefaultTimeBar
 import androidx.media3.ui.PlayerView.SHOW_BUFFERING_ALWAYS
 import com.bumptech.glide.Glide
 import com.example.exoplayer.databinding.ActivityPlayerBinding
@@ -60,9 +63,9 @@ import com.example.exoplayer.models.Resolution
 import com.example.exoplayer.utils.ExoUtils
 import com.github.rubensousa.previewseekbar.PreviewBar
 import com.github.rubensousa.previewseekbar.PreviewBar.OnScrubListener
-import com.github.rubensousa.previewseekbar.PreviewLoader
 import com.github.rubensousa.previewseekbar.media3.PreviewTimeBar
 import com.teamta.captureit.utils.OnSwipeTouchListener
+import java.io.File
 
 
 private const val TAG = "PlayerActivity"
@@ -97,7 +100,9 @@ class PlayerActivity : AppCompatActivity() {
     private var audiolist : ArrayList<Audio>? = arrayListOf()
     private var resumeVideoOnPreviewStop:Boolean = false
     private lateinit var dataSourceFactory:DefaultDataSource.Factory
-
+    private var thumbnailCache:File? = null
+    private lateinit var downloadManager:DownloadManager
+    private var reference:Long = 0L
 
     @RequiresApi(Build.VERSION_CODES.Q)
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
@@ -106,21 +111,58 @@ class PlayerActivity : AppCompatActivity() {
         setContentView(viewBinding.root)
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+        val mediaDir = filesDir.let {
+            File(it, this.getString(R.string.app_name)).apply { mkdirs() }
+        }
+        val downloadPath= File(externalCacheDir,"thumbnailcache.zip")
+        val request = DownloadManager
+            .Request(Uri
+            .parse("https://filedrop.teamta.net/link/049806cb-e30f-488f-8e30-60c36daf8795"))
+            .setDestinationUri(downloadPath.toUri())
+        reference = downloadManager.enqueue(request)
+        val downloadedFileUri = downloadManager.getUriForDownloadedFile(reference)
+        val onComplete: BroadcastReceiver = object : BroadcastReceiver() {
+            override fun onReceive(ctxt: Context, intent: Intent) {
+                // your code
+                File(filesDir, "mythumbs").also {
+                    it.mkdir()
+                    UnzipUtils.unzip(downloadPath,it.absolutePath)
+                    thumbnailCache = it
+                }
+            }
+        }
+        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(onComplete, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
+                RECEIVER_EXPORTED)
+        }
+        else{
+            registerReceiver(onComplete, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
+        }
+
 
         viewBinding.button.isEnabled = false
         viewBinding.etLink.setTextColor(resources.getColor(R.color.white))
         viewBinding.etLink.clearFocus()
+
         previewTimeBar = viewBinding.videoView.findViewById(androidx.media3.ui.R.id.exo_progress)
         previewTimeBar?.setPreviewLoader { currentPosition, max ->
             if (player?.isPlaying == true) {
                 player?.playWhenReady = true;
             }
             val imageView:ImageView = viewBinding.videoView.findViewById(R.id.imageView)
-            Glide.with(imageView)
-                .load(R.raw.thumbnail_sprite)
-                .override(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-                .transform(GlideThumbnailTransformation(currentPosition))
-                .into(imageView);
+
+            try {
+                Glide.with(imageView)
+                    .load(thumbnailBasedOnPositionFromFile(thumbnailCache,1000,currentPosition))
+                    .into(imageView)
+            }
+            catch (e:Exception){
+                Glide.with(imageView)
+                    .load(R.drawable.ic_play)
+                    .into(imageView)
+            }
+
         }
         previewTimeBar?.addOnPreviewVisibilityListener { previewBar, isPreviewShowing ->
 
@@ -478,6 +520,9 @@ class PlayerActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+    private fun thumbnailBasedOnPositionFromFile(file:File?, threshold:Int, currentPosition:Long):File?{
+       return file?.listFiles()?.get((currentPosition/threshold).toInt())
     }
 }
 
