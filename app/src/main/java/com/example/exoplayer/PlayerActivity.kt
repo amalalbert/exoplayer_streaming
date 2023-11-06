@@ -121,6 +121,7 @@ class PlayerActivity : AppCompatActivity() {
         val request = DownloadManager
             .Request(Uri
             .parse("https://filedrop.teamta.net/link/049806cb-e30f-488f-8e30-60c36daf8795"))
+            .setMimeType("document/zip")
             .setDestinationUri(downloadPath?.toUri())
         reference = downloadManager.enqueue(request)
 
@@ -249,6 +250,7 @@ class PlayerActivity : AppCompatActivity() {
             .also { exoPlayer ->
                 viewBinding.videoView.player = exoPlayer
                 // Update the track selection parameters to only pick standard definition tracks
+
                 exoPlayer.trackSelectionParameters = exoPlayer.trackSelectionParameters
                         .buildUpon()
                     .setMaxVideoSize(1921,828)
