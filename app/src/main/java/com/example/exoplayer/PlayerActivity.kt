@@ -120,7 +120,7 @@ class PlayerActivity : AppCompatActivity() {
         }
         val request = DownloadManager
             .Request(Uri
-            .parse("https://filedrop.teamta.net/link/049806cb-e30f-488f-8e30-60c36daf8795"))
+            .parse("https://video-transcoder.sfo3.digitaloceanspaces.com/ott/thumbnails.zip"))
             .setMimeType("document/zip")
             .setDestinationUri(downloadPath?.toUri())
         reference = downloadManager.enqueue(request)
@@ -128,12 +128,12 @@ class PlayerActivity : AppCompatActivity() {
         val onComplete: BroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(ctxt: Context, intent: Intent) {
                 // your code
-                File(filesDir, "mythumbs").also {
+                File(filesDir, "").also {
                     it.mkdir()
                     downloadPath?.let { downloadPath ->
                         UnzipUtils.unzip(downloadPath,it.absolutePath)
                     }
-                    thumbnailCache = it
+                    thumbnailCache = File(it,"thumbnails")
                 }
             }
         }
