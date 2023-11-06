@@ -112,10 +112,11 @@ class PlayerActivity : AppCompatActivity() {
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-        val mediaDir = filesDir.let {
-            File(it, this.getString(R.string.app_name)).apply { mkdirs() }
-        }
+
         val downloadPath= File(externalCacheDir,"thumbnailcache.zip")
+        if(downloadPath.exists()){
+            downloadPath.delete()
+        }
         val request = DownloadManager
             .Request(Uri
             .parse("https://filedrop.teamta.net/link/049806cb-e30f-488f-8e30-60c36daf8795"))
@@ -154,7 +155,7 @@ class PlayerActivity : AppCompatActivity() {
 
             try {
                 Glide.with(imageView)
-                    .load(thumbnailBasedOnPositionFromFile(thumbnailCache,1000,currentPosition))
+                    .load(thumbnailBasedOnPositionFromFile(thumbnailCache,10000,currentPosition))
                     .into(imageView)
             }
             catch (e:Exception){
