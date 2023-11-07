@@ -118,6 +118,7 @@ class PlayerActivity : AppCompatActivity() {
         if(downloadPath?.exists() == true){
             downloadPath?.delete()
         }
+
         val request = DownloadManager
             .Request(Uri
             .parse("https://video-transcoder.sfo3.digitaloceanspaces.com/ott/thumbnails.zip"))
@@ -137,6 +138,7 @@ class PlayerActivity : AppCompatActivity() {
                 }
             }
         }
+
         if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(onComplete, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
                 RECEIVER_EXPORTED)
@@ -213,7 +215,7 @@ class PlayerActivity : AppCompatActivity() {
                 }
             }
         }
-
+       // set the media source
        ExoUtils.generateMediaSource(getString(R.string.media_url_m3u8_multi_language),this)?.let {
             mediaSource = it
         }

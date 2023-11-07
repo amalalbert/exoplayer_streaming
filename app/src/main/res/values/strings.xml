@@ -35,7 +35,7 @@ limitations under the License. -->
   <string name="media_url_dash3">https://dash.akamaized.net/dash264/TestCases/1b/qualcomm/1_1/MultiRatePatched.mpd</string>
   <string name="media_url_Live">https://sportsleading.online/live/stream_e1.m3u8</string>
   <string name="media_url_Live2">https://sportsleading.online/live/stream_e2.m3u8</string>
-  <string name="media_url_english">https://abclive1-lh.akamaihd.net/i/abc_live05@423399/master.m3u8</string>
+  <string name="media_url_encrypted">https://video-transcoder.sfo3.digitaloceanspaces.com/ott/encrypted/encrypted/master.m3u8</string>
   <string name="thumbnailed_source">https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8</string>
   <string name="logo">Google logo</string>
   <string name="video_rewind_button">video rewind\n</string>
