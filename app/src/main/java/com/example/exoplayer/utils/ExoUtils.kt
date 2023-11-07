@@ -2,9 +2,6 @@ package com.example.exoplayer.utils
 
 import android.content.Context
 import android.net.Uri
-import android.text.Editable
-import android.util.Log
-import android.widget.EditText
 import androidx.media3.common.C.TRACK_TYPE_TEXT
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes
@@ -17,6 +14,10 @@ import com.example.exoplayer.models.Language
 import java.util.*
 
 object ExoUtils {
+    /**
+     * @param track  Track to parse.
+     * @return List<Language>
+     */
     fun getLanguagesFromTrackInfo(track: Tracks): List<Language> {
         return track.groups.asSequence().mapNotNull {
             if (it.type != TRACK_TYPE_TEXT) {
@@ -38,21 +39,25 @@ object ExoUtils {
     }
 
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
-
-    fun generateMediaSource(text: String, context: Context): MediaSource? {
+     /**
+     *@param url url to generate the MediaSource.
+     *@param context A context.
+     *@return MediaSource
+     */
+    fun generateMediaSource(url: String, context: Context): MediaSource? {
         var mediaSource: MediaSource? = null
-        if (text.isNotEmpty()) {
-            if (text.contains(".mpd")) {
+        if (url.isNotEmpty()) {
+            if (url.contains(".mpd")) {
                 val mediaItem = MediaItem.Builder()
-                    .setUri(Uri.parse(text))
+                    .setUri(Uri.parse(url))
                     .setMimeType(MimeTypes.APPLICATION_MPD)
                     .build()
                 val dataSourceFactory = DefaultDataSource.Factory(context)
                 mediaSource =
                     DashMediaSource.Factory(dataSourceFactory).createMediaSource(mediaItem)
-            } else if (text.contains(".m3u8")) {
+            } else if (url.contains(".m3u8")) {
                 val mediaItem = MediaItem.Builder()
-                    .setUri(Uri.parse(text))
+                    .setUri(Uri.parse(url))
                     .setMimeType(MimeTypes.APPLICATION_MPD)
                     .build()
                 val dataSourceFactory = DefaultDataSource.Factory(context)
