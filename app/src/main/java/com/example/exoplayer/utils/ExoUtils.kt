@@ -58,7 +58,7 @@ object ExoUtils {
             } else if (url.contains(".m3u8")) {
                 val mediaItem = MediaItem.Builder()
                     .setUri(Uri.parse(url))
-                    .setMimeType(MimeTypes.APPLICATION_MPD)
+                    .setMimeType(MimeTypes.APPLICATION_M3U8)
                     .build()
                 val dataSourceFactory = DefaultDataSource.Factory(context)
                 mediaSource =
