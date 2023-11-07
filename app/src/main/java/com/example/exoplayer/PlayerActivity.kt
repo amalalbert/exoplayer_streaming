@@ -391,6 +391,9 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Releases the already initialized player.
+     */
     private fun releasePlayer() {
         player?.let { player ->
             playbackPosition = player.currentPosition
@@ -403,6 +406,9 @@ class PlayerActivity : AppCompatActivity() {
     }
 
     @SuppressLint("InlinedApi")
+    /**
+     * Hides the System Navbar
+     */
     private fun hideSystemUi() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         WindowInsetsControllerCompat(window, viewBinding.videoView).let { controller ->
@@ -412,6 +418,9 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     *@return object of Player.Listener
+     */
     private fun playbackStateListener() = object : Player.Listener {
         override fun onPlaybackStateChanged(playbackState: Int) {
 
