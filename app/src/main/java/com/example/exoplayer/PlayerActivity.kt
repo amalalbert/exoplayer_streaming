@@ -48,7 +48,6 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
-import androidx.media3.common.MimeTypes
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
 import androidx.media3.datasource.DefaultDataSource
@@ -64,7 +63,6 @@ import com.example.exoplayer.utils.ExoUtils
 import com.github.rubensousa.previewseekbar.PreviewBar
 import com.github.rubensousa.previewseekbar.PreviewBar.OnScrubListener
 import com.github.rubensousa.previewseekbar.media3.PreviewTimeBar
-import com.teamta.captureit.utils.OnSwipeTouchListener
 import java.io.File
 
 
@@ -122,7 +120,6 @@ class PlayerActivity : AppCompatActivity() {
         val request = DownloadManager
             .Request(Uri
             .parse("https://video-transcoder.sfo3.digitaloceanspaces.com/ott/thumbnails.zip"))
-            .setMimeType("document/zip")
             .setDestinationUri(downloadPath?.toUri())
         reference = downloadManager.enqueue(request)
 
@@ -154,6 +151,7 @@ class PlayerActivity : AppCompatActivity() {
 
         previewTimeBar = viewBinding.videoView.findViewById(androidx.media3.ui.R.id.exo_progress)
         previewTimeBar?.setPreviewLoader { currentPosition, max ->
+
             if (player?.isPlaying == true) {
                 player?.playWhenReady = true;
             }
@@ -171,12 +169,13 @@ class PlayerActivity : AppCompatActivity() {
             }
 
         }
-        previewTimeBar?.addOnPreviewVisibilityListener { previewBar, isPreviewShowing ->
 
+        previewTimeBar?.addOnPreviewVisibilityListener { previewBar, isPreviewShowing ->
                 Log.d("PreviewShowing", "$isPreviewShowing")
         }
 
         previewTimeBar?.addOnScrubListener(object : OnScrubListener {
+
             override fun onScrubStart(previewBar: PreviewBar?) {
                 Log.d("Scrub", "START");
             }
@@ -192,8 +191,9 @@ class PlayerActivity : AppCompatActivity() {
         })
 
         viewBinding.etLink.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                //no op
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -202,10 +202,12 @@ class PlayerActivity : AppCompatActivity() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-
+                //no op
             }
 
         })
+
+        // generate source on click
         viewBinding.button.setOnClickListener {
             viewBinding.etLink.text.let {text->
                 ExoUtils.generateMediaSource(text.toString(),this)?.let {
@@ -215,6 +217,7 @@ class PlayerActivity : AppCompatActivity() {
                 }
             }
         }
+
        // set the media source
        ExoUtils.generateMediaSource(getString(R.string.media_url_m3u8_multi_language),this)?.let {
             mediaSource = it
@@ -244,6 +247,9 @@ class PlayerActivity : AppCompatActivity() {
             releasePlayer()
     }
 
+    /**
+     * Function to initialize the player, set the source and
+     */
     private fun initializePlayer() {
 
         // ExoPlayer implements the Player interface
@@ -276,10 +282,6 @@ class PlayerActivity : AppCompatActivity() {
             .setOnClickListener {
                 player?.play()
             }
-        val dialog = Dialog(this)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setContentView(R.layout.dialog_settings)
-        dialog.setCancelable(true)
 
         val wrapper: Context = ContextThemeWrapper(this,
             androidx.appcompat.R.style.ThemeOverlay_AppCompat_Dark_ActionBar)
@@ -498,7 +500,16 @@ class PlayerActivity : AppCompatActivity() {
             }
         }
     }
-    private fun thumbnailBasedOnPositionFromFile(file:File?, threshold:Int, currentPosition:Long):File?{
+
+
+    /**
+     * @param file  File representation of current thumbnail directory.
+     * @param threshold  The value of the aggregate used to calculate the index of file to be
+     * shown as thumbnail.
+     * @param currentPosition The value of current position in millis.
+     * @return File at the calculated index
+     */
+    private fun thumbnailBasedOnPositionFromFile (file:File?, threshold:Int, currentPosition:Long):File?{
        return file?.listFiles()?.get((currentPosition/threshold).toInt())
     }
 }
