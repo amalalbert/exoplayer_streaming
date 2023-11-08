@@ -151,6 +151,7 @@ class PlayerActivity : AppCompatActivity() {
     }
 
 
+
     @RequiresApi(Build.VERSION_CODES.Q)
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     override fun  onCreate(savedInstanceState: Bundle?) {
@@ -283,14 +284,14 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-    public override fun onStart() {
+    override fun onStart() {
         super.onStart()
         if (player == null) {
             initializePlayer()
         }
     }
 
-    public override fun onResume() {
+    override fun onResume() {
         super.onResume()
         hideSystemUi()
         if (player == null) {
@@ -298,16 +299,19 @@ class PlayerActivity : AppCompatActivity() {
         }
     }
 
-    public override fun onPause() {
+    override fun onPause() {
         super.onPause()
             player?.pause()
     }
 
-    public override fun onStop() {
+    override fun onStop() {
         super.onStop()
-            releasePlayer()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        releasePlayer()
+    }
     /**
      * Function to initialize the player, set the source and
      */
