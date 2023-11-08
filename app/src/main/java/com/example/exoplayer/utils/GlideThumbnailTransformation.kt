@@ -1,4 +1,4 @@
-package com.example.exoplayer
+package com.example.exoplayer.utils
 
 import android.graphics.Bitmap
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool

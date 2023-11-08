@@ -1,4 +1,4 @@
-package com.teamta.captureit.utils
+package com.example.exoplayer.utils
 
 import android.content.Context
 import android.view.GestureDetector

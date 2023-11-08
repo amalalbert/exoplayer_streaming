@@ -60,7 +60,6 @@ import com.bumptech.glide.Glide
 import com.example.exoplayer.databinding.ActivityPlayerBinding
 import com.example.exoplayer.models.Audio
 import com.example.exoplayer.models.Resolution
-import com.example.exoplayer.utils.ExoUtils
 import com.example.exoplayer.utils.ExoUtils.cookieBuilder
 import com.example.exoplayer.utils.ExoUtils.generateMediaSource
 import com.example.exoplayer.utils.LoggingInterceptor
