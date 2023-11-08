@@ -59,9 +59,14 @@ dependencies {
 
     def mediaVersion = "1.1.1"
     implementation "androidx.media3:media3-exoplayer:$mediaVersion"
+    implementation "androidx.media3:media3-datasource-okhttp:$mediaVersion"
     implementation "androidx.media3:media3-ui:$mediaVersion"
     implementation "androidx.media3:media3-exoplayer-dash:$mediaVersion"
     implementation "androidx.media3:media3-exoplayer-hls:$mediaVersion"
+
+    //PersistentCookieJar - for proper setting of the cookie values
+
+    implementation('com.github.franmontiel:PersistentCookieJar:v1.0.1')
 
     //PreviewSeekBar
 

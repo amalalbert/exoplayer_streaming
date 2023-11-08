@@ -17,7 +17,6 @@ package com.example.exoplayer
 
 import UnzipUtils
 import android.annotation.SuppressLint
-import android.app.Dialog
 import android.app.DownloadManager
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -33,7 +32,6 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.view.Window
 import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -48,10 +46,13 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MimeTypes
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
 import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.mediacodec.MediaCodecSelector
 import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.ui.PlayerView.SHOW_BUFFERING_ALWAYS
@@ -60,10 +61,23 @@ import com.example.exoplayer.databinding.ActivityPlayerBinding
 import com.example.exoplayer.models.Audio
 import com.example.exoplayer.models.Resolution
 import com.example.exoplayer.utils.ExoUtils
+import com.example.exoplayer.utils.ExoUtils.cookieBuilder
+import com.example.exoplayer.utils.ExoUtils.generateMediaSource
+import com.example.exoplayer.utils.LoggingInterceptor
+import com.franmontiel.persistentcookiejar.PersistentCookieJar
+import com.franmontiel.persistentcookiejar.cache.SetCookieCache
+import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
 import com.github.rubensousa.previewseekbar.PreviewBar
 import com.github.rubensousa.previewseekbar.PreviewBar.OnScrubListener
 import com.github.rubensousa.previewseekbar.media3.PreviewTimeBar
+import okhttp3.Cache
+import okhttp3.Cookie
+import okhttp3.CookieJar
+import okhttp3.HttpUrl
+import okhttp3.OkHttpClient
 import java.io.File
+import java.time.Instant
+import java.util.Date
 
 
 private const val TAG = "PlayerActivity"
@@ -77,16 +91,15 @@ class PlayerActivity : AppCompatActivity() {
     private val viewBinding by lazy(LazyThreadSafetyMode.NONE) {
         ActivityPlayerBinding.inflate(layoutInflater)
     }
+
     lateinit var subtitleSelectionPopup : PopupMenu
     lateinit var resolutionSelectorPopup : PopupMenu
     lateinit var audioSelectorPopup : PopupMenu
     private var lastSelectedAudioTrack : MenuItem? = null
     private var lastSelectedVideoTrack : MenuItem? = null
     private var lastSelectedSubtitleTrack : MenuItem? = null
-    private var languageCode : String? = null
     private val playbackStateListener : Player.Listener = playbackStateListener()
     private var player : ExoPlayer? = null
-    private var mediaItem :MediaItem? = null
     private var playWhenReady = true
     private var downloadPath : File? = null
     private var mediaItemIndex = 0
@@ -98,16 +111,53 @@ class PlayerActivity : AppCompatActivity() {
     private var reslist : ArrayList<Resolution>? = arrayListOf()
     private var audiolist : ArrayList<Audio>? = arrayListOf()
     private var resumeVideoOnPreviewStop : Boolean = false
-    private lateinit var dataSourceFactory : DefaultDataSource.Factory
     private var thumbnailCache : File? = null
     private lateinit var downloadManager : DownloadManager
     private var reference : Long = 0L
+
+    companion object {
+        val cookies: ArrayList<Cookie?> = arrayListOf()
+        private val httpurl = HttpUrl.Builder()
+            .scheme("https")
+            .host("d2ikp5103loz36.cloudfront.net")
+            .addPathSegment("/trailer")
+            .build()
+        private val expiryDate: Date = Date.from(Instant.parse("2024-11-06T08:37:10Z"))
+
+        init {
+            cookies.add(
+                cookieBuilder(
+                    "CloudFront-Policy",
+                    "eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9kMmlrcDUxMDNsb3ozNi5jbG91ZGZyb250Lm5ldC8qIiwiQ29uZGl0aW9uIjp7IklwQWRkcmVzcyI6eyJBV1M6U291cmNlSXAiOiIxMDMuMTM1Ljk1LjE1NCJ9LCJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTczMjU4ODgwMH19fV19",
+                    expiryDate,
+                    httpurl
+                )
+            )
+            cookies.add(
+                cookieBuilder(
+                    "CloudFront-Signature",
+                    "EyTVruMRs2cSNkuAmK11pIoN2cL5UFF5OYWSiGwuSEoEBpFccb7Zdz43MeZPVhwd8~A7~xkCtW0uKG0LsKxL38CMT0rB~QQkukDuY3sDtMc5mu4vF9sFk24Ieygw5ggDq1FG7-B-vSzJd6kxnoU3r8MK-lxzT~zMfGYrtgLqPAZ4gGi74CPvHXf-yJ5gYGeb~eXTWnMcjUjVE6SoiLZXrmq1P5DNrjHqcX083sR5x4R4f0lt6c0fos6a6pJavltwzGo6IUVvNmT5FN6qI7CyYkCF6Ppj4tlyVgI8eKLz6AOqczbBx-Z4KzXCdDngnM0w9ifNuuyEDnABn0CW41zT0A__",
+                    expiryDate,
+                    httpurl
+                )
+            )
+            cookies.add(
+                cookieBuilder(
+                    "CloudFront-Key-Pair-Id", "K24JEKU60VKL77",
+                    expiryDate,
+                    httpurl
+                )
+            )
+        }
+    }
+
 
     @RequiresApi(Build.VERSION_CODES.Q)
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     override fun  onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
+
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
@@ -126,12 +176,17 @@ class PlayerActivity : AppCompatActivity() {
         val onComplete: BroadcastReceiver = object : BroadcastReceiver() {
             override fun onReceive(ctxt: Context, intent: Intent) {
                 // your code
-                File(filesDir, "").also {
-                    it.mkdir()
-                    downloadPath?.let { downloadPath ->
-                        UnzipUtils.unzip(downloadPath,it.absolutePath)
+                try {
+                    File(filesDir, "").also {
+                        it.mkdir()
+                        downloadPath?.let { downloadPath ->
+                            UnzipUtils.unzip(downloadPath, it.absolutePath)
+                        }
+                        thumbnailCache = File(it, "thumbnails")
                     }
-                    thumbnailCache = File(it,"thumbnails")
+                }
+                catch (e:Exception){
+                    e.printStackTrace()
                 }
             }
         }
@@ -210,7 +265,10 @@ class PlayerActivity : AppCompatActivity() {
         // generate source on click
         viewBinding.button.setOnClickListener {
             viewBinding.etLink.text.let {text->
-                ExoUtils.generateMediaSource(text.toString(),this)?.let {
+                generateMediaSource(
+                    text.toString(), this, cookies,
+                    httpurl
+                )?.let {
                     mediaSource = it
                     releasePlayer()
                     initializePlayer()
@@ -219,14 +277,18 @@ class PlayerActivity : AppCompatActivity() {
         }
 
        // set the media source
-       ExoUtils.generateMediaSource(getString(R.string.media_url_m3u8_multi_language),this)?.let {
+       generateMediaSource(getString(R.string.media_url_encrypted),this,
+           cookies, httpurl
+       )?.let {
             mediaSource = it
         }
     }
 
     public override fun onStart() {
         super.onStart()
+        if (player == null) {
             initializePlayer()
+        }
     }
 
     public override fun onResume() {
@@ -239,7 +301,7 @@ class PlayerActivity : AppCompatActivity() {
 
     public override fun onPause() {
         super.onPause()
-            releasePlayer()
+            player?.pause()
     }
 
     public override fun onStop() {
@@ -264,6 +326,7 @@ class PlayerActivity : AppCompatActivity() {
                     .setMaxVideoSize(1921,828)
                         .setPreferredTextLanguage("en")
                         .build()
+
                 exoPlayer.setMediaSource(mediaSource)
                 exoPlayer.playWhenReady = playWhenReady
                 exoPlayer.addListener(playbackStateListener)
@@ -271,7 +334,7 @@ class PlayerActivity : AppCompatActivity() {
                 exoPlayer.prepare()
             }
         player?.trackSelectionParameters = player?.trackSelectionParameters
-            ?.buildUpon()?.setPreferredTextLanguage("de")
+            ?.buildUpon()?.setPreferredTextLanguage("en")
             ?.build()!!
 
         viewBinding.videoView.findViewById<ImageButton>(androidx.media3.ui.R.id.exo_pause)
@@ -520,6 +583,57 @@ class PlayerActivity : AppCompatActivity() {
      */
     private fun thumbnailBasedOnPositionFromFile (file:File?, threshold:Int, currentPosition:Long):File?{
        return file?.listFiles()?.get((currentPosition/threshold).toInt())
+    }
+
+    private fun cloudFrontHttpsSource(url: String, context: Context): HlsMediaSource {
+        val mediaItem = MediaItem.Builder()
+            .setUri(Uri.parse(url))
+            .setMimeType(MimeTypes.APPLICATION_M3U8)
+            .build()
+
+        cookies.add(
+            cookieBuilder(
+                "CloudFront-Policy",
+                "eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9kMmlrcDUxMDNsb3ozNi5jbG91ZGZyb250Lm5ldC8qIiwiQ29uZGl0aW9uIjp7IklwQWRkcmVzcyI6eyJBV1M6U291cmNlSXAiOiIxMDMuMTM1Ljk1LjE1NCJ9LCJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTczMjU4ODgwMH19fV19",
+                expiryDate,
+                httpurl
+            )
+        )
+        cookies.add(
+            cookieBuilder(
+                "CloudFront-Signature",
+                "EyTVruMRs2cSNkuAmK11pIoN2cL5UFF5OYWSiGwuSEoEBpFccb7Zdz43MeZPVhwd8~A7~xkCtW0uKG0LsKxL38CMT0rB~QQkukDuY3sDtMc5mu4vF9sFk24Ieygw5ggDq1FG7-B-vSzJd6kxnoU3r8MK-lxzT~zMfGYrtgLqPAZ4gGi74CPvHXf-yJ5gYGeb~eXTWnMcjUjVE6SoiLZXrmq1P5DNrjHqcX083sR5x4R4f0lt6c0fos6a6pJavltwzGo6IUVvNmT5FN6qI7CyYkCF6Ppj4tlyVgI8eKLz6AOqczbBx-Z4KzXCdDngnM0w9ifNuuyEDnABn0CW41zT0A__",
+                expiryDate,
+                httpurl
+            )
+        )
+        cookies.add(cookieBuilder("CloudFront-Key-Pair-Id", "K24JEKU60VKL77", expiryDate, httpurl))
+
+        val interceptor = LoggingInterceptor()
+
+        val cookieJar: CookieJar =
+            PersistentCookieJar(SetCookieCache(), SharedPrefsCookiePersistor(context))
+
+        cookieJar.saveFromResponse(
+            httpurl,
+            cookies.toList() as List<Cookie>
+        )
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor(interceptor)
+            .cookieJar(cookieJar)
+            .cache(Cache(cacheDir, 4096))
+            .build()
+
+        val httpDataSourceFactory = OkHttpDataSource.Factory(client)
+
+        val dataSourceFactory = DefaultDataSource.Factory(
+            context,
+            httpDataSourceFactory
+        )
+
+        return HlsMediaSource.Factory(dataSourceFactory)
+            .createMediaSource(mediaItem)
     }
 }
 
