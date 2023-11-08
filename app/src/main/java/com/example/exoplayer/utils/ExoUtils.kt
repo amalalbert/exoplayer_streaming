@@ -53,6 +53,8 @@ object ExoUtils {
      /**
      *@param url url to generate the MediaSource.
      *@param context A context.
+     *@param cookies A List of Cookies.
+     *@param httpUrl the url to be used for Building the Okhttp Client.
      *@return MediaSource
      */
     fun generateMediaSource(
