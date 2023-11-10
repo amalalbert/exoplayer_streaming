@@ -169,7 +169,7 @@ class PlayerActivity : AppCompatActivity() {
 
         val request = DownloadManager
             .Request(Uri
-            .parse("https://video-transcoder.sfo3.digitaloceanspaces.com/ott/thumbnails.zip"))
+            .parse("https://drive.google.com/uc?id=1kJBRwxxcLHCkkqZbAGJ5LGttR5fCDTNw&export=download"))
             .setDestinationUri(downloadPath?.toUri())
         reference = downloadManager.enqueue(request)
 
@@ -179,10 +179,14 @@ class PlayerActivity : AppCompatActivity() {
                 try {
                     File(filesDir, "").also {
                         it.mkdir()
+                        thumbnailCache = File(it, "thumbnails")
+                        thumbnailCache?.listFiles()?.forEach { prevThumbs->
+                            prevThumbs.delete()
+                        }
                         downloadPath?.let { downloadPath ->
                             UnzipUtils.unzip(downloadPath, it.absolutePath)
                         }
-                        thumbnailCache = File(it, "thumbnails")
+
                     }
                 }
                 catch (e:Exception){
@@ -205,6 +209,7 @@ class PlayerActivity : AppCompatActivity() {
         viewBinding.etLink.clearFocus()
 
         previewTimeBar = viewBinding.videoView.findViewById(androidx.media3.ui.R.id.exo_progress)
+
         previewTimeBar?.setPreviewLoader { currentPosition, max ->
 
             if (player?.isPlaying == true) {
@@ -304,13 +309,9 @@ class PlayerActivity : AppCompatActivity() {
             player?.pause()
     }
 
-    override fun onStop() {
-        super.onStop()
-    }
-
     override fun onDestroy() {
-        super.onDestroy()
         releasePlayer()
+        super.onDestroy()
     }
     /**
      * Function to initialize the player, set the source and
