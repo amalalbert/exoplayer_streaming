@@ -16,13 +16,22 @@ import com.example.exoplayer.models.Language
 import com.franmontiel.persistentcookiejar.PersistentCookieJar
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.Cache
 import okhttp3.Cookie
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
-import java.util.*
-import kotlin.collections.ArrayList
+import java.io.BufferedInputStream
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
+import java.net.HttpURLConnection
+import java.net.URL
+import java.util.Date
+import java.util.Locale
 
 object ExoUtils {
     /**
@@ -107,7 +116,7 @@ object ExoUtils {
         }
         return mediaSource
     }
-    fun cookieBuilder (name:String,value:String,expiry:Date,httpUrl: HttpUrl): Cookie {
+    fun cookieBuilder (name:String, value:String, expiry: Date, httpUrl: HttpUrl): Cookie {
         val builder = Cookie.Builder()
             .name(name)
             .value(value)
@@ -116,6 +125,39 @@ object ExoUtils {
             .expiresAt(expiry.time)
         return builder.build().also {
             Log.d("amal", "cookieBuilder:${it.path} ")
+        }
+    }
+    suspend fun downloadAndSaveFile(context: Context, fileUrl: String, fileName: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                // Create a URL object from the file URL
+                val url = URL(fileUrl)
+                // Open a connection to the URL
+                val urlConnection: HttpURLConnection = url.openConnection() as HttpURLConnection
+
+                // Set up input and output streams
+                urlConnection.connect()
+                val input: InputStream = BufferedInputStream(urlConnection.inputStream)
+                val output: OutputStream = FileOutputStream("$fileName/download.zip")
+
+                // Read data from the input stream and write it to the output stream
+                val buffer = ByteArray(1024)
+                var bytesRead: Int
+                while (input.read(buffer).also { bytesRead = it } != -1) {
+                    output.write(buffer, 0, bytesRead)
+                }
+
+                // Close the streams
+                output.flush()
+                output.close()
+                input.close()
+                // Notify the user on the main thread, yet to be done
+
+            } catch (e: IOException) {
+                Log.e("DownloadError",e.toString())
+                // Handle exceptions appropriately
+                e.printStackTrace()
+            }
         }
     }
 }

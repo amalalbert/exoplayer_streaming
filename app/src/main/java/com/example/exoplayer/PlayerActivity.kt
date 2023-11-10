@@ -43,6 +43,7 @@ import androidx.core.net.toUri
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
@@ -61,6 +62,7 @@ import com.example.exoplayer.databinding.ActivityPlayerBinding
 import com.example.exoplayer.models.Audio
 import com.example.exoplayer.models.Resolution
 import com.example.exoplayer.utils.ExoUtils.cookieBuilder
+import com.example.exoplayer.utils.ExoUtils.downloadAndSaveFile
 import com.example.exoplayer.utils.ExoUtils.generateMediaSource
 import com.example.exoplayer.utils.LoggingInterceptor
 import com.franmontiel.persistentcookiejar.PersistentCookieJar
@@ -69,6 +71,7 @@ import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersisto
 import com.github.rubensousa.previewseekbar.PreviewBar
 import com.github.rubensousa.previewseekbar.PreviewBar.OnScrubListener
 import com.github.rubensousa.previewseekbar.media3.PreviewTimeBar
+import kotlinx.coroutines.launch
 import okhttp3.Cache
 import okhttp3.Cookie
 import okhttp3.CookieJar
@@ -157,8 +160,7 @@ class PlayerActivity : AppCompatActivity() {
     override fun  onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(viewBinding.root)
-
-
+        
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
 
@@ -330,7 +332,6 @@ class PlayerActivity : AppCompatActivity() {
                     .setMaxVideoSize(1921,828)
                         .setPreferredTextLanguage("en")
                         .build()
-
                 exoPlayer.setMediaSource(mediaSource)
                 exoPlayer.playWhenReady = playWhenReady
                 exoPlayer.addListener(playbackStateListener)
