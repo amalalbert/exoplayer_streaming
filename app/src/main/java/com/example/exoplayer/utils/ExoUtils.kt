@@ -3,6 +3,8 @@ package com.example.exoplayer.utils
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.media3.common.C.TRACK_TYPE_TEXT
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes
@@ -127,7 +129,9 @@ object ExoUtils {
             Log.d("amal", "cookieBuilder:${it.path} ")
         }
     }
-    suspend fun downloadAndSaveFile(context: Context, fileUrl: String, fileName: String) {
+    suspend fun downloadAndSaveFile(context: Context, fileUrl: String, fileName: String) : LiveData<Boolean> {
+        Log.e("DownloadStatus", "Download in progress")
+        val downloadComplete = MutableLiveData<Boolean>()
         withContext(Dispatchers.IO) {
             try {
                 // Create a URL object from the file URL
@@ -151,13 +155,21 @@ object ExoUtils {
                 output.flush()
                 output.close()
                 input.close()
-                // Notify the user on the main thread, yet to be done
-
+                // Notify the user on the main thread
+                withContext(Dispatchers.Main){
+                    downloadComplete.value = true
+                }
             } catch (e: IOException) {
                 Log.e("DownloadError",e.toString())
                 // Handle exceptions appropriately
                 e.printStackTrace()
+
+                // In case of an error, set the LiveData value to false
+                withContext(Dispatchers.Main) {
+                    downloadComplete.value = false
+                }
             }
         }
+        return downloadComplete
     }
 }

@@ -43,12 +43,15 @@ import androidx.core.net.toUri
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.C
 import androidx.media3.common.Format
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MimeTypes
 import androidx.media3.common.Player
+import androidx.media3.common.TrackSelectionParameters
 import androidx.media3.common.Tracks
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.okhttp.OkHttpDataSource
@@ -56,6 +59,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.hls.HlsMediaSource
 import androidx.media3.exoplayer.mediacodec.MediaCodecSelector
 import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.exoplayer.trackselection.TrackSelectionArray
 import androidx.media3.ui.PlayerView.SHOW_BUFFERING_ALWAYS
 import com.bumptech.glide.Glide
 import com.example.exoplayer.databinding.ActivityPlayerBinding
@@ -71,7 +75,10 @@ import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersisto
 import com.github.rubensousa.previewseekbar.PreviewBar
 import com.github.rubensousa.previewseekbar.PreviewBar.OnScrubListener
 import com.github.rubensousa.previewseekbar.media3.PreviewTimeBar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.Cache
 import okhttp3.Cookie
 import okhttp3.CookieJar
@@ -93,7 +100,7 @@ class PlayerActivity : AppCompatActivity() {
     private val viewBinding by lazy(LazyThreadSafetyMode.NONE) {
         ActivityPlayerBinding.inflate(layoutInflater)
     }
-
+    lateinit var downloadCompleteLiveData :LiveData<Boolean>
     lateinit var subtitleSelectionPopup : PopupMenu
     lateinit var resolutionSelectorPopup : PopupMenu
     lateinit var audioSelectorPopup : PopupMenu
@@ -163,48 +170,54 @@ class PlayerActivity : AppCompatActivity() {
         
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-
-        downloadPath = File(externalCacheDir,"thumbnailcache.zip")
+        val zipPath = File(filesDir,"download.zip")
+        val fileUrl = "ttps://drive.google.com/u/0/uc?id=1kJBRwxxcLHCkkqZbAGJ5LGttR5fCDTNw&export=download"
+        downloadPath = File(filesDir,"thumbnails")
         if(downloadPath?.exists() == true){
             downloadPath?.delete()
         }
 
-        val request = DownloadManager
-            .Request(Uri
-            .parse("https://drive.google.com/uc?id=1kJBRwxxcLHCkkqZbAGJ5LGttR5fCDTNw&export=download"))
-            .setDestinationUri(downloadPath?.toUri())
-        reference = downloadManager.enqueue(request)
+        lifecycleScope.launch {
+            downloadCompleteLiveData = downloadAndSaveFile(this@PlayerActivity,
+                fileUrl,
+                filesDir!!.absolutePath)
 
-        val onComplete: BroadcastReceiver = object : BroadcastReceiver() {
-            override fun onReceive(ctxt: Context, intent: Intent) {
-                // your code
-                try {
-                    File(filesDir, "").also {
-                        it.mkdir()
-                        thumbnailCache = File(it, "thumbnails")
-                        thumbnailCache?.listFiles()?.forEach { prevThumbs->
-                            prevThumbs.delete()
+            downloadCompleteLiveData.observe(this@PlayerActivity, Observer { downloadComplete ->
+                if (downloadComplete) {
+                    // Download is complete
+                    Log.d("DownloadStatus", "Download complete")
+                    try {
+                        File(filesDir, "").also {
+                            it.mkdir()
+                            thumbnailCache = File(it, "thumbnails")
+                            if (!thumbnailCache!!.exists()){
+                                thumbnailCache!!.mkdir()
+                            }
+                            thumbnailCache?.listFiles()?.forEach { prevThumbs->
+                                prevThumbs.delete()
+                            }
+                            downloadPath?.let { downloadPath ->
+                                downloadPath.mkdir()
+                                UnzipUtils.unzip(zipPath, it.absolutePath)
+                            }
                         }
-                        downloadPath?.let { downloadPath ->
-                            UnzipUtils.unzip(downloadPath, it.absolutePath)
-                        }
-
                     }
+                    catch (e:Exception){
+                        e.printStackTrace()
+                    }
+                    // Update the UI accordingly
+                } else {
+                    // Download failed
+                    Log.e("DownloadStatus", "Download failed")
+                     lifecycleScope.launch {
+                         downloadCompleteLiveData = downloadAndSaveFile(
+                             this@PlayerActivity, fileUrl, filesDir!!.absolutePath
+                         )
+                     }
+                    // Handle download failure
                 }
-                catch (e:Exception){
-                    e.printStackTrace()
-                }
-            }
+            })
         }
-
-        if (Build.VERSION.SDK_INT>= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(onComplete, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE),
-                RECEIVER_EXPORTED)
-        }
-        else{
-            registerReceiver(onComplete, IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
-        }
-
 
         viewBinding.button.isEnabled = false
         viewBinding.etLink.setTextColor(resources.getColor(R.color.white))
@@ -226,7 +239,7 @@ class PlayerActivity : AppCompatActivity() {
             }
             catch (e:Exception){
                 Glide.with(imageView)
-                    .load(R.drawable.ic_play)
+                    .load(R.color.black)
                     .into(imageView)
             }
 
@@ -284,7 +297,7 @@ class PlayerActivity : AppCompatActivity() {
         }
 
        // set the media source
-       generateMediaSource(getString(R.string.media_url_encrypted),this,
+       generateMediaSource(getString(R.string.media_url_m3u8_multi_language),this,
            cookies, httpurl
        )?.let {
             mediaSource = it
@@ -517,7 +530,6 @@ class PlayerActivity : AppCompatActivity() {
                 audiolist?.clear()
             }
             super.onTracksChanged(tracks)
-
             val trackGroupList = tracks.groups
             for (trackGroup in trackGroupList) {
                 // Group level information.
