@@ -171,7 +171,7 @@ class PlayerActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         val zipPath = File(filesDir,"download.zip")
-        val fileUrl = "ttps://drive.google.com/u/0/uc?id=1kJBRwxxcLHCkkqZbAGJ5LGttR5fCDTNw&export=download"
+        val fileUrl = "https://drive.google.com/u/0/uc?id=1kJBRwxxcLHCkkqZbAGJ5LGttR5fCDTNw&export=download"
         downloadPath = File(filesDir,"thumbnails")
         if(downloadPath?.exists() == true){
             downloadPath?.delete()
