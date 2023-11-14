@@ -171,7 +171,7 @@ class PlayerActivity : AppCompatActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         downloadManager = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
         val zipPath = File(filesDir,"download.zip")
-        val fileUrl = "https://drive.google.com/u/0/uc?id=1kJBRwxxcLHCkkqZbAGJ5LGttR5fCDTNw&export=download"
+        val fileUrl = "htps://drive.google.com/u/0/uc?id=1kJBRwxxcLHCkkqZbAGJ5LGttR5fCDTNw&export=download"
         downloadPath = File(filesDir,"thumbnails")
         if(downloadPath?.exists() == true){
             downloadPath?.delete()
@@ -241,6 +241,47 @@ class PlayerActivity : AppCompatActivity() {
                 Glide.with(imageView)
                     .load(R.color.black)
                     .into(imageView)
+                lifecycleScope.launch {
+                    downloadCompleteLiveData = downloadAndSaveFile(this@PlayerActivity,
+                        fileUrl,
+                        filesDir!!.absolutePath)
+
+                    downloadCompleteLiveData.observe(this@PlayerActivity, Observer { downloadComplete ->
+                        if (downloadComplete) {
+                            // Download is complete
+                            Log.d("DownloadStatus", "Download complete")
+                            try {
+                                File(filesDir, "").also {
+                                    it.mkdir()
+                                    thumbnailCache = File(it, "thumbnails")
+                                    if (thumbnailCache?.exists() == false){
+                                        thumbnailCache?.mkdir()
+                                    }
+                                    thumbnailCache?.listFiles()?.forEach { prevThumbs->
+                                        prevThumbs.delete()
+                                    }
+                                    downloadPath?.let { downloadPath ->
+                                        downloadPath.mkdir()
+                                        UnzipUtils.unzip(zipPath, it.absolutePath)
+                                    }
+                                }
+                            }
+                            catch (e:Exception){
+                                e.printStackTrace()
+                            }
+                            // Update the UI accordingly
+                        } else {
+                            // Download failed
+                            Log.e("DownloadStatus", "Download failed")
+                            lifecycleScope.launch {
+                                downloadCompleteLiveData = downloadAndSaveFile(
+                                    this@PlayerActivity, fileUrl, filesDir!!.absolutePath
+                                )
+                            }
+                            // Handle download failure
+                        }
+                    })
+                }
             }
 
         }
