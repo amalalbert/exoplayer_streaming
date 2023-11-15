@@ -25,6 +25,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.C
 import androidx.media3.common.Format
@@ -41,7 +42,6 @@ import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.ui.PlayerView
 import com.bumptech.glide.Glide
 import com.example.exoplayer.R
-import com.example.exoplayer.TAG
 import com.example.exoplayer.databinding.ActivityPlayerBinding
 import com.example.exoplayer.models.Audio
 import com.example.exoplayer.models.Resolution
@@ -94,6 +94,7 @@ class PlayerActivity : AppCompatActivity() {
     private var thumbnailCache : File? = null
     private lateinit var downloadManager : DownloadManager
     private var reference : Long = 0L
+    private val TAG = "PlayerActivity"
 
     companion object {
         val cookies: ArrayList<Cookie?> = arrayListOf()
