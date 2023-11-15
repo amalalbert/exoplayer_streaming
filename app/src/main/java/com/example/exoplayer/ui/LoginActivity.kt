@@ -1,10 +1,10 @@
-package com.example.exoplayer
+package com.example.exoplayer.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.example.exoplayer.R
 import com.example.exoplayer.databinding.ActivityLoginBinding
-import com.example.exoplayer.databinding.ActivityPlayerBinding
 
 class LoginActivity : AppCompatActivity() {
     private val viewBinding by lazy(LazyThreadSafetyMode.NONE) {
