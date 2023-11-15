@@ -12,42 +12,43 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License. -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-  <string name="app_name">StreamIt</string>
-  <string name="player_activity_name">StreamIt</string>
-  <string name="media_url_mp3">https://storage.googleapis.com/exoplayer-test-media-0/Jazz_In_Paris.mp3</string>
-  <string name="media_url_m3u8">https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8</string>
-  <string name="media_url_akamai">https://moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8</string>
-  <string name="media_url_tears_of_steel">https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8</string>
-  <string name="media_url_m3u8_multi_language">https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8</string>
-  <string name="media_url_m3u8_cmaf">https://devimages-cdn.apple.com/samplecode/avfoundationMedia/AVFoundationQueuePlayer_HLS2/master.m3u8</string>
-  <string name="media_url_Dolby_vision">https://media.developer.dolby.com/DolbyVision_Atmos/profile5_HLS/master.m3u8</string>
-  <string name="media_url_Dolby_vision2">https://ott.dolby.com/service_first/HLS_SDR_h265_UHD_2397_DDP_ATMOS/stream.m3u8</string>
-  <string name="media_url_Dolby_vision3">https://ott.dolby.com/service_first/HLS_SDR_h264_FHD_2397_DDP_ATMOS/stream.m3u8</string>
-  <string name="media_url_Dolby_vision_cmaf">https://ott.dolby.com/service_first/CMAF_SDR_h265_UHD_24_DDP_ATMOS/stream.m3u8</string>
-  <string name="media_url_dolby_atmos_audio">https://ott.dolby.com/media/music/mp4s/1_Falling_Angel_Intro_Edit_ddpjoc_768kbps.mp4</string>
-  <string name="media_url_mp4">https://storage.googleapis.com/exoplayer-test-media-0/BigBuckBunny_320x180.mp4</string>
-  <string name="dolby_digital_cmaf">https://ott.dolby.com/service_first/CMAF_SDR_h265_UHD_2397_DDP_51/stream.m3u8</string>
-  <string name="cmaf_test">https://video-transcoder.sfo3.digitaloceanspaces.com/ott-test2/master.m3u8</string>
-  <string name="cmaf_test2">https://video-transcoder.sfo3.digitaloceanspaces.com/ott-test2/stream.mpd</string>
-  <string name="media_url_dolby_atmos">https://devstreaming-cdn.apple.com/videos/streaming/examples/adv_dv_atmos/main.m3u8</string>
-  <string name="media_url_dash"><![CDATA[https://www.youtube.com/api/manifest/dash/id/bf5bb2419360daf1/source/youtube?as=fmp4_audio_clear,fmp4_sd_hd_clear&sparams=ip,ipbits,expire,source,id,as&ip=0.0.0.0&ipbits=0&expire=19000000000&signature=51AF5F39AB0CEC3E5497CD9C900EBFEAECCCB5C7.8506521BFC350652163895D4C26DEE124209AA9E&key=ik0]]></string>
-  <string name="media_url_dash2">http://d3rlna7iyyu8wu.cloudfront.net/Atmos/DASH/dolby_shattered_DASH/Shattered_10000000.mpd</string>
-  <string name="media_url_dash3">https://dash.akamaized.net/dash264/TestCases/1b/qualcomm/1_1/MultiRatePatched.mpd</string>
-  <string name="media_url_Live">https://sportsleading.online/live/stream_e1.m3u8</string>
-  <string name="media_url_Live2">https://sportsleading.online/live/stream_e2.m3u8</string>
-  <string name="media_url_encrypted">https://d2ikp5103loz36.cloudfront.net/trailer/master.m3u8</string>
-  <string name="thumbnailed_source">https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8</string>
-  <string name="logo">Google logo</string>
-  <string name="video_rewind_button">video rewind\n</string>
-  <string name="video_play_button">Video Play</string>
-  <string name="video_pause_button">Video pause</string>
-  <string name="exo_track_title_video">forward video</string>
-  <string name="exo_track_title_audio">forward video</string>
-  <string name="exo_track_title_text">forward video</string>
-  <string name="video_forward_button">forward video</string>
-  <string name="track_selection_title">Video Quality</string>
-  <string-array name="list">
-    <item>1</item>
-    <item>2</item>
-  </string-array>
+    <string name="app_name">StreamIt</string>
+    <string name="player_activity_name">StreamIt</string>
+    <string name="media_url_mp3">https://storage.googleapis.com/exoplayer-test-media-0/Jazz_In_Paris.mp3</string>
+    <string name="media_url_m3u8">https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8</string>
+    <string name="media_url_akamai">https://moctobpltc-i.akamaihd.net/hls/live/571329/eight/playlist.m3u8</string>
+    <string name="media_url_tears_of_steel">https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8</string>
+    <string name="media_url_m3u8_multi_language">https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8</string>
+    <string name="media_url_m3u8_cmaf">https://devimages-cdn.apple.com/samplecode/avfoundationMedia/AVFoundationQueuePlayer_HLS2/master.m3u8</string>
+    <string name="media_url_Dolby_vision">https://media.developer.dolby.com/DolbyVision_Atmos/profile5_HLS/master.m3u8</string>
+    <string name="media_url_Dolby_vision2">https://ott.dolby.com/service_first/HLS_SDR_h265_UHD_2397_DDP_ATMOS/stream.m3u8</string>
+    <string name="media_url_Dolby_vision3">https://ott.dolby.com/service_first/HLS_SDR_h264_FHD_2397_DDP_ATMOS/stream.m3u8</string>
+    <string name="media_url_Dolby_vision_cmaf">https://ott.dolby.com/service_first/CMAF_SDR_h265_UHD_24_DDP_ATMOS/stream.m3u8</string>
+    <string name="media_url_dolby_atmos_audio">https://ott.dolby.com/media/music/mp4s/1_Falling_Angel_Intro_Edit_ddpjoc_768kbps.mp4</string>
+    <string name="media_url_mp4">https://storage.googleapis.com/exoplayer-test-media-0/BigBuckBunny_320x180.mp4</string>
+    <string name="dolby_digital_cmaf">https://ott.dolby.com/service_first/CMAF_SDR_h265_UHD_2397_DDP_51/stream.m3u8</string>
+    <string name="cmaf_test">https://video-transcoder.sfo3.digitaloceanspaces.com/ott-test2/master.m3u8</string>
+    <string name="cmaf_test2">https://video-transcoder.sfo3.digitaloceanspaces.com/ott-test2/stream.mpd</string>
+    <string name="media_url_dolby_atmos">https://devstreaming-cdn.apple.com/videos/streaming/examples/adv_dv_atmos/main.m3u8</string>
+    <string name="media_url_dash"><![CDATA[https://www.youtube.com/api/manifest/dash/id/bf5bb2419360daf1/source/youtube?as=fmp4_audio_clear,fmp4_sd_hd_clear&sparams=ip,ipbits,expire,source,id,as&ip=0.0.0.0&ipbits=0&expire=19000000000&signature=51AF5F39AB0CEC3E5497CD9C900EBFEAECCCB5C7.8506521BFC350652163895D4C26DEE124209AA9E&key=ik0]]></string>
+    <string name="media_url_dash2">http://d3rlna7iyyu8wu.cloudfront.net/Atmos/DASH/dolby_shattered_DASH/Shattered_10000000.mpd</string>
+    <string name="media_url_dash3">https://dash.akamaized.net/dash264/TestCases/1b/qualcomm/1_1/MultiRatePatched.mpd</string>
+    <string name="media_url_Live">https://sportsleading.online/live/stream_e1.m3u8</string>
+    <string name="media_url_Live2">https://sportsleading.online/live/stream_e2.m3u8</string>
+    <string name="media_url_encrypted">https://d2ikp5103loz36.cloudfront.net/trailer/master.m3u8</string>
+    <string name="thumbnailed_source">https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8</string>
+    <string name="logo">Google logo</string>
+    <string name="video_rewind_button">video rewind\n</string>
+    <string name="video_play_button">Video Play</string>
+    <string name="video_pause_button">Video pause</string>
+    <string name="exo_track_title_video">forward video</string>
+    <string name="exo_track_title_audio">forward video</string>
+    <string name="exo_track_title_text">forward video</string>
+    <string name="video_forward_button">forward video</string>
+    <string name="track_selection_title">Video Quality</string>
+    <string name="enter_email_to_login">  Enter Email To Login</string>
+    <string-array name="list">
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 </resources>
