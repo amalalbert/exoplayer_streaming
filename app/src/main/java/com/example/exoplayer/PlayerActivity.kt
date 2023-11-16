@@ -137,7 +137,7 @@ class PlayerActivity : AppCompatActivity() {
             cookies.add(
                 cookieBuilder(
                     "CloudFront-Policy",
-                    "eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly9kMmlrcDUxMDNsb3ozNi5jbG91ZGZyb250Lm5ldC8qIiwiQ29uZGl0aW9uIjp7IklwQWRkcmVzcyI6eyJBV1M6U291cmNlSXAiOiIxMDMuMTM1Ljk1LjE1NCJ9LCJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTczMjU4ODgwMH19fV19",
+                    "eyJTdGF0ZW1lbnQiOiBbeyJSZXNvdXJjZSI6Imh0dHBzOi8vZDJpa3A1MTAzbG96MzYuY2xvdWRmcm9udC5uZXQvKiIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTcwMDcxMzkxMH0sIklwQWRkcmVzcyI6eyJBV1M6U291cmNlSXAiOiIxMDMuMTM1Ljk1LjE1NCJ9fX1dfQ__",
                     expiryDate,
                     httpurl
                 )
@@ -145,7 +145,7 @@ class PlayerActivity : AppCompatActivity() {
             cookies.add(
                 cookieBuilder(
                     "CloudFront-Signature",
-                    "EyTVruMRs2cSNkuAmK11pIoN2cL5UFF5OYWSiGwuSEoEBpFccb7Zdz43MeZPVhwd8~A7~xkCtW0uKG0LsKxL38CMT0rB~QQkukDuY3sDtMc5mu4vF9sFk24Ieygw5ggDq1FG7-B-vSzJd6kxnoU3r8MK-lxzT~zMfGYrtgLqPAZ4gGi74CPvHXf-yJ5gYGeb~eXTWnMcjUjVE6SoiLZXrmq1P5DNrjHqcX083sR5x4R4f0lt6c0fos6a6pJavltwzGo6IUVvNmT5FN6qI7CyYkCF6Ppj4tlyVgI8eKLz6AOqczbBx-Z4KzXCdDngnM0w9ifNuuyEDnABn0CW41zT0A__",
+                    "VtGQFCpZgRRIJiHcQcSad3rD3Fr-9g3QB~~SvQRsa0fJB1XO3b4yITvJZU4cJLQP6IRNcF1Ote9oyrryRyd0rH4wJBeDsA-Mt8ToimnVL0P2UtOqrM53ENolJPwrztwxyCWvwoKNcIgJSVA0rbK-c-a05o2bowr7Qu5JqGIOfwsgToVUd44-6U980254wcoDPyjXaiAcS1a3AaPH1NkNC9ttjSQz7s7gTofyeDunOftn9a72lWGZheNK9NK-ur3dqHA9vttyQee1hzvquvhW~AuSYiCGhjMAfy0VdJptZnNnRFzxo9tMM6BnRIvXvIRCrBMj-VDpe--Ojg1uSBzmSg__",
                     expiryDate,
                     httpurl
                 )
@@ -338,7 +338,7 @@ class PlayerActivity : AppCompatActivity() {
         }
 
        // set the media source
-       generateMediaSource(getString(R.string.media_url_m3u8_multi_language),this,
+       generateMediaSource(getString(R.string.media_url_encrypted),this,
            cookies, httpurl
        )?.let {
             mediaSource = it
