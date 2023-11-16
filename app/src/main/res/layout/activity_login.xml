@@ -8,6 +8,7 @@
 
     <ImageView
         android:id="@+id/iv_login_bg"
+        android:alpha="0.5"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:layout_editor_absoluteX="16dp"
@@ -37,6 +38,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
         <ImageButton
+            android:id="@+id/bt_fwd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
@@ -45,6 +47,118 @@
             android:src="@drawable/arrow"
             app:layout_constraintBottom_toBottomOf="parent"
             />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_otp_with_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="100dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/otpLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/enter_otp"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="@+id/otpInput1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/otpInput1"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="50dp"
+            android:inputType="number"
+            android:maxLength="1"
+            android:textSize="24sp"
+            android:textAlignment="center"
+            android:background="@drawable/shape"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toStartOf="@id/otpInput2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/otpInput2"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:inputType="number"
+            android:maxLength="1"
+            android:textSize="24sp"
+            android:textAlignment="center"
+            android:background="@drawable/shape"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toStartOf="@id/otpInput3"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/otpInput1"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/otpInput3"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:inputType="number"
+            android:maxLength="1"
+            android:textSize="24sp"
+            android:textAlignment="center"
+            android:background="@drawable/shape"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toStartOf="@id/otpInput4"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/otpInput2"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/otpInput4"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="50dp"
+            android:inputType="number"
+            android:maxLength="1"
+            android:textSize="24sp"
+            android:textAlignment="center"
+            android:background="@drawable/shape"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/otpInput3"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:text="@string/submit"
+            android:src="@drawable/arrow_back"
+            android:background="@drawable/shape"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/otpInput1"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+
+        <ImageView
+            android:id="@+id/submitButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/submit"
+            android:background="@drawable/circle_bg"
+            android:src="@drawable/arrow"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/otpInput4"
+            app:layout_constraintStart_toStartOf="@id/otpInput1"
+            app:layout_constraintTop_toBottomOf="@id/otpInput3" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

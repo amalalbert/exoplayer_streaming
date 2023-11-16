@@ -47,6 +47,8 @@ limitations under the License. -->
     <string name="video_forward_button">forward video</string>
     <string name="track_selection_title">Video Quality</string>
     <string name="enter_email_to_login">  Enter Email To Login</string>
+    <string name="enter_otp">Enter OTP:</string>
+    <string name="submit">Submit</string>
     <string-array name="list">
         <item>1</item>
         <item>2</item>

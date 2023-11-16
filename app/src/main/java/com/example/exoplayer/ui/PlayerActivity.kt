@@ -148,7 +148,6 @@ class PlayerActivity : AppCompatActivity() {
         if(downloadPath?.exists() == true){
             downloadPath?.delete()
         }
-
         lifecycleScope.launch {
             downloadCompleteLiveData = ExoUtils.downloadAndSaveFile(
                 this@PlayerActivity,

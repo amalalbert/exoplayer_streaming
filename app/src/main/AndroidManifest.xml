@@ -20,7 +20,7 @@
             android:name=".ui.LoginActivity"
             android:label="@string/player_activity_name"
             android:exported="true"
-            android:theme="@style/PlayerTheme">
+            android:theme="@style/Theme.StreamIt">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -32,7 +32,7 @@
             android:exported="true"
             android:label="@string/player_activity_name"
             android:screenOrientation="landscape"
-            android:theme="@style/PlayerTheme">
+            android:theme="@style/Theme.StreamIt">
         </activity>
     </application>
 
